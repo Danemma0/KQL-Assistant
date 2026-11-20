@@ -154,4 +154,4 @@ Open <http://localhost:5000>. The SQLite database (`kql_assistant.db`) is create
 
 ## Licence
 
-No licence has been specified yet. Add a `LICENSE` file (for example MIT) to define how others may use this project.
+Released under the [MIT License](LICENSE).
