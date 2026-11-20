@@ -4,6 +4,22 @@ A local web app that helps security analysts investigate **insider risk alerts i
 
 It is built for SOC analysts, especially junior ones, who need to move quickly from "an alert fired" to "here is what to check next".
 
+![KQL Insider Risk Assistant screenshot](docs/screenshot.png)
+
+## Quick start
+
+```bash
+git clone https://github.com/Danemma0/KQL-Assistant.git
+cd KQL-Assistant
+python -m venv venv
+venv\Scripts\activate          # macOS/Linux: source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env            # Windows: copy .env.example .env, then add your ANTHROPIC_API_KEY
+python app.py
+```
+
+Then open <http://localhost:5000>. You need Python 3.10+ and an [Anthropic API key](https://console.anthropic.com/). See [Getting started](#getting-started) for details.
+
 > **Disclaimer:** Generated queries should always be reviewed and validated in your own Sentinel environment before use. Table and field names can differ between workspaces. This tool does not connect to Sentinel and does not run queries.
 
 ---
