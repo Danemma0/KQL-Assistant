@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KQL Insider Risk Assistant</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+</head>
+
+<body>
+  <div class="app-layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-tabs">
+        <button class="tab-btn active" onclick="switchTab('investigations')">Saved</button>
+        <button class="tab-btn" onclick="switchTab('library')">Library</button>
+        <button class="tab-btn" onclick="switchTab('editor')">Editor</button>
+      </div>
+
+      <div id="tab-investigations">
+        <div id="history-list"></div>
+      </div>
+
+      <div id="tab-library" style="display:none">
+
+        <!-- Built-in presets -->
+        <p style="font-size:0.75rem;color:#8b949e;margin-bottom:8px;">PRESETS</p>
+        <div class="library-item preset-item" onclick="pasteQuery(this)"
+            data-query="DeviceFileEvents&#10;| where TimeGenerated > ago(7d)&#10;| where ActionType == 'FileCreatedOnRemovableMedia'">
+          🔌 USB Activity
+        </div>
+        <div class="library-item preset-item" onclick="pasteQuery(this)"
+            data-query="OfficeActivity&#10;| where TimeGenerated > ago(1d)&#10;| where Operation == 'FileDownloaded'&#10;| summarize count() by UserId&#10;| where count_ > 500">
+          📥 Mass Download
+        </div>
+        <div class="library-item preset-item" onclick="pasteQuery(this)"
+            data-query="SigninLogs&#10;| where TimeGenerated > ago(7d)&#10;| where hourofday(TimeGenerated) !between (8 .. 18)">
+          🌙 After Hours Access
+        </div>
+
+        <hr style="border-color:#30363d;margin:12px 0;">
+
+        <!-- Saved custom queries -->
+        <p style="font-size:0.75rem;color:#8b949e;margin-bottom:8px;">SAVED QUERIES</p>
+        <div id="custom-query-list"></div>
+
+        <!-- Add new query form -->
+        <div id="add-query-form" style="margin-top:10px;">
+          <input
+            id="new-query-name"
+            type="text"
+            placeholder="Query name..."
+            style="width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;
+                  border-radius:6px;color:#c9d1d9;font-size:0.8rem;margin-bottom:6px;"
+          />
+          <textarea
+            id="new-query-body"
+            placeholder="Paste your KQL query here..."
+            rows="4"
+            style="width:100%;padding:6px 8px;background:#21262d;border:1px solid #30363d;
+                  border-radius:6px;color:#c9d1d9;font-size:0.8rem;resize:vertical;
+                  font-family:'Cascadia Code','Consolas',monospace;"
+          ></textarea>
+          <button onclick="saveCustomQuery()"
+            style="width:100%;margin-top:6px;padding:7px;background:#238636;border:none;
+                  border-radius:6px;color:white;cursor:pointer;font-size:0.8rem;font-weight:600;">
+            + Save Query
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="container">
+      <header>
+        <div class="header-top">
+            <h1>KQL Insider Risk Assistant</h1>
+            <button
+                id="theme-btn"
+                onclick="toggleTheme()">
+                🌙 Theme
+            </button>
+        </div>
+
+        <p class="subtitle">
+            Microsoft Sentinel | Insider Risk Investigations
+        </p>
+      </header>
+
+      <div class="controls">
+        <label for="alert-type">Alert Type</label>
+        <select id="alert-type">
+          <option value="General">General / Unknown</option>
+          <option value="DLP">DLP — Data Loss Prevention</option>
+          <option value="UEBA">UEBA — User and Entity Behaviour Analytics</option>
+          <option value="SIEM">SIEM — Security Information and Event Management</option>
+          <option value="EDR">EDR — Endpoint Detection Response</option>
+          <option value="CASB">CASB — Cloud Access Security Broker</option>
+          <option value="Pre-Termination">Pre-Termination Risk</option>
+          <option value="Mass File Download">Mass File Download</option>
+          <option value="Data Exfiltration">Data Exfiltration</option>
+          <option value="Unusual Access">Unusual Access Activity</option>
+        </select>
+        <button id="reset-btn" onclick="resetConversation()">New Investigation</button>
+      </div>
+
+      <div class="chat-window" id="chat-window">
+        <div class="message assistant-message">
+          <strong>Assistant:</strong>
+          <p>Hello. Describe your alert or investigation scenario and I will generate
+          a KQL query and investigation checklist for you. Select the alert type above
+          to give me additional context.</p>
+        </div>
+      </div>
+
+      <div id="editor-panel" style="display:none;flex-direction:column;gap:12px;flex:1;overflow:hidden;">
+
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input
+            id="editor-query-name"
+            type="text"
+            placeholder="Query name (Mandatory to save to library)..."
+            style="flex:1;padding:8px 12px;background:#161b22;border:1px solid #30363d;
+                  border-radius:6px;color:#c9d1d9;font-size:0.85rem;"
+          />
+          <button onclick="saveEditorToLibrary()"
+            style="padding:8px 14px;background:#21262d;border:1px solid #30363d;
+                  border-radius:6px;color:#c9d1d9;cursor:pointer;font-size:0.85rem;white-space:nowrap;">
+            💾 Save to Library
+          </button>
+          <button onclick="clearEditor()"
+            style="padding:8px 14px;background:#21262d;border:1px solid #30363d;
+                  border-radius:6px;color:#c9d1d9;cursor:pointer;font-size:0.85rem;">
+            🗑 Clear
+          </button>
+        </div>
+
+        <!-- Editor area -->
+        <textarea
+          id="kql-editor"
+          spellcheck="false"
+          placeholder="Write or paste your KQL query here..."
+          oninput="liveValidate()"
+          style="flex:1;min-height:280px;padding:14px;background:#0d1117;border:1px solid #30363d;
+                border-radius:8px;color:#79c0ff;font-size:0.9rem;font-family:'Cascadia Code','Consolas',monospace;
+                resize:none;line-height:1.7;tab-size:2;"
+        ></textarea>
+
+        <!-- Validation status bar -->
+        <div id="validation-bar"
+          style="padding:10px 14px;border-radius:6px;background:#161b22;border:1px solid #30363d;
+                font-size:0.85rem;min-height:42px;display:flex;align-items:center;gap:8px;">
+          <span id="validation-icon">⬜</span>
+          <span id="validation-msg" style="color:#8b949e;">Start typing to validate syntax...</span>
+        </div>
+
+        <!-- Claude review panel -->
+        <div style="display:flex;gap:10px;">
+          <button onclick="claudeReview()"
+            style="flex:1;padding:10px;background:#238636;border:none;border-radius:6px;
+                  color:white;cursor:pointer;font-size:0.9rem;font-weight:600;">
+            🤖 Review with Claude
+          </button>
+          <button onclick="sendEditorToChat()"
+            style="flex:1;padding:10px;background:#1f2d3d;border:1px solid #58a6ff;border-radius:6px;
+                  color:#58a6ff;cursor:pointer;font-size:0.9rem;font-weight:600;">
+            ↗ Send to Chat
+          </button>
+        </div>
+
+        <!-- Claude review output -->
+        <div id="claude-review-output"
+          style="display:none;padding:14px;background:#161b22;border:1px solid #30363d;
+                border-radius:8px;font-size:0.85rem;line-height:1.6;overflow-y:auto;max-height:220px;">
+        </div>
+
+      </div>
+
+      <div id="input-area-wrapper" class="input-area">
+        <textarea
+          id="user-input"
+          placeholder="Describe the alert or scenario... e.g. A user downloaded 1,200 files from SharePoint at 11pm and connected a USB drive shortly after."
+          rows="3"
+        ></textarea>
+        <button id="send-btn" onclick="sendMessage()">Send</button>
+      </div>
+
+      <div class="session-info">
+        <span id="history-count">Messages in session: 0</span>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
