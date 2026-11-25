@@ -338,22 +338,23 @@ textarea:focus {
   margin-bottom:10px;
 }
 
+/* ── Light / day theme — cool slate palette, easy on the eyes ──────────── */
 .light-theme {
-  background: #e8e4dc;
-  color: #18181b; 
+  background: #f1f5f9;
+  color: #1e293b;
 }
 
 .light-theme body {
-  background: #e8e4dc;
+  background: #f1f5f9;
 }
 
 .light-theme .container {
-  background: #e8e4dc;
+  background: #f1f5f9;
 }
 
 .light-theme .sidebar {
-  background: #dedad2;
-  border-color: #c8c3ba;
+  background: #e2e8f0;
+  border-color: #cbd5e1;
 }
 
 .light-theme header h1 {
@@ -361,71 +362,71 @@ textarea:focus {
 }
 
 .light-theme .subtitle {
-  color: #44403c;
+  color: #475569;
 }
 
 .light-theme .controls label {
-  color: #44403c;
+  color: #475569;
 }
 
 .light-theme .chat-window {
-  background: #e2ddd5;
-  border-color: #c8c3ba;
+  background: #e8edf4;
+  border-color: #cbd5e1;
 }
 
 .light-theme .user-message {
-  background: #d4e4fa;
+  background: #dbeafe;
   border-left-color: #2563eb;
-  color: #18181b;
+  color: #1e293b;
 }
 
 .light-theme .assistant-message {
-  background: #edeae3;
+  background: #f0f4f8;
   border-left-color: #16a34a;
-  color: #18181b;
+  color: #1e293b;
 }
 
 .light-theme pre {
-  background: #1e1e1e;
-  border-color: #444;
-  color: #d4d4d4;
+  background: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
 }
 
 .light-theme .copy-btn {
-  background: #238636;
+  background: #2563eb;
   color: white;
 }
 
 .light-theme select {
-  background: #edeae3;
-  border-color: #c8c3ba;
-  color: #18181b;
+  background: #f0f4f8;
+  border-color: #cbd5e1;
+  color: #1e293b;
 }
 
 .light-theme textarea {
-  background: #edeae3;
-  border-color: #c8c3ba;
-  color: #18181b;
+  background: #f0f4f8;
+  border-color: #cbd5e1;
+  color: #1e293b;
 }
 
 .light-theme textarea::placeholder {
-  color: #78716c;
+  color: #94a3b8;
 }
 
 .light-theme #reset-btn {
-  background: #dedad2;
-  border-color: #c8c3ba;
-  color: #18181b;
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #1e293b;
 }
 
 .light-theme #reset-btn:hover {
-  background: #c8c3ba;
+  background: #cbd5e1;
 }
 
 .light-theme #theme-btn {
-  background: #dedad2;
-  border-color: #c8c3ba;
-  color: #18181b;
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #1e293b;
 }
 
 .light-theme #send-btn {
@@ -433,52 +434,52 @@ textarea:focus {
 }
 
 .light-theme .history-item {
-  background: #e2ddd5;
-  border-color: #c8c3ba;
-  color: #18181b;
+  background: #e8edf4;
+  border-color: #cbd5e1;
+  color: #1e293b;
 }
 
 .light-theme .history-item:hover {
   border-color: #2563eb;
-  background: #d4e4fa;
+  background: #dbeafe;
 }
 
 .light-theme .tab-btn {
-  background: #dedad2;
-  border-color: #c8c3ba;
-  color: #44403c;
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #475569;
 }
 
 .light-theme .tab-btn.active {
-  background: #d4e4fa;
+  background: #dbeafe;
   border-color: #2563eb;
   color: #1d4ed8;
 }
 
 .light-theme .library-item {
-  background: #e2ddd5;
-  border-color: #c8c3ba;
-  color: #18181b;
+  background: #e8edf4;
+  border-color: #cbd5e1;
+  color: #1e293b;
 }
 
 .light-theme .library-item:hover {
-  background: #d1fae5;
+  background: #dcfce7;
   border-color: #16a34a;
   color: #15803d;
 }
 
 .light-theme .session-info {
-  color: #57534e;
+  color: #64748b;
 }
 
 .light-theme .message strong {
-  color: #44403c;
+  color: #475569;
 }
 
 .light-theme .assistant-message h1,
 .light-theme .assistant-message h2 {
   color: #1d4ed8;
-  border-color: #c8c3ba;
+  border-color: #cbd5e1;
 }
 
 .light-theme .assistant-message h3 {
@@ -486,21 +487,40 @@ textarea:focus {
 }
 
 .light-theme .assistant-message strong {
-  color: #18181b;
+  color: #1e293b;
 }
 
 .light-theme .assistant-message td,
 .light-theme .assistant-message th {
-  border-color: #c8c3ba;
+  border-color: #cbd5e1;
 }
 
 .light-theme .assistant-message th {
-  background: #dedad2;
+  background: #e2e8f0;
   color: #1d4ed8;
 }
 
 .light-theme .assistant-message hr {
-  border-color: #c8c3ba;
+  border-color: #cbd5e1;
+}
+
+.light-theme .masking-bar {
+  color: #475569;
+}
+
+.light-theme .masking-badge {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #15803d;
+}
+
+.light-theme #validation-bar {
+  background: #e8edf4;
+  border-color: #cbd5e1;
+}
+
+.light-theme details summary {
+  color: #475569;
 }
 
 .header-top{
@@ -560,4 +580,56 @@ textarea:focus {
   border-color: #3fb950;
   background: #1a2d1a;
   color: #3fb950;
+}
+
+/* ── Input action row ──────────────────────────────────────────────────── */
+.input-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#stop-btn {
+  padding: 10px 16px;
+  background: #b91c1c;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: 600;
+  height: fit-content;
+}
+
+#stop-btn:hover { background: #dc2626; }
+
+/* ── Masking bar ───────────────────────────────────────────────────────── */
+.masking-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: #8b949e;
+  flex-wrap: wrap;
+  padding: 2px 0;
+}
+
+.masking-badge {
+  background: #1a2d1a;
+  border: 1px solid #3fb950;
+  color: #3fb950;
+  border-radius: 10px;
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Token usage line ──────────────────────────────────────────────────── */
+.session-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
 }
