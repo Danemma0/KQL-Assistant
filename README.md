@@ -1,4 +1,4 @@
-# KQL Insider Risk Assistant
+﻿# KQL Insider Risk Assistant
 
 A local web app that helps security analysts investigate **insider risk alerts in Microsoft Sentinel**. Describe an alert in plain English and the assistant returns ready-to-run **KQL queries**, a plain-English explanation of each one, and a tailored **investigation checklist**, all powered by the Claude API.
 
@@ -128,16 +128,16 @@ Open <http://localhost:5000>. The SQLite database (`kql_assistant.db`) is create
 
 ```
 .
-├── app.py              # Flask routes: chat, history, PDF export, library, query review
-├── database.py         # SQLite schema and migrations
-├── system_prompt.py    # System prompt: KQL and insider-risk expertise
-├── requirements.txt
-├── .env.example        # Template for your API key
-├── templates/
-│   └── index.html
-└── static/
-    ├── script.js
-    └── style.css
+â”œâ”€â”€ app.py              # Flask routes: chat, history, PDF export, library, query review
+â”œâ”€â”€ database.py         # SQLite schema and migrations
+â”œâ”€â”€ system_prompt.py    # System prompt: KQL and insider-risk expertise
+â”œâ”€â”€ requirements.txt
+â”œâ”€â”€ .env.example        # Template for your API key
+â”œâ”€â”€ templates/
+â”‚   â””â”€â”€ index.html
+â””â”€â”€ static/
+    â”œâ”€â”€ script.js
+    â””â”€â”€ style.css
 ```
 
 ### API routes
@@ -155,19 +155,94 @@ Open <http://localhost:5000>. The SQLite database (`kql_assistant.db`) is create
 
 ---
 
-## Security and privacy notes
+## Privacy and masking
 
-- Your API key lives only in `.env`, which is git-ignored. Never commit it.
-- Investigation history is stored **locally** in `kql_assistant.db` (git-ignored). Prompts and responses are sent to the Claude API, so **do not enter real personal data, usernames or confidential case details** unless your organisation's policies allow it. Use placeholders such as `username@domain.com`.
-- This is a local development tool. Flask's debug mode is on by default; do not expose it to a network or the internet without hardening it (disable debug, add authentication, use a production server).
+Sensitive values in your investigation scenarios **never leave your machine in plain text**.
 
-## Roadmap ideas
+### How it works
+- **Email addresses / UPNs**, **IPv4 / IPv6 addresses**, **FQDNs / hostnames**, and **`DOMAIN\user`** patterns are automatically detected and replaced with consistent tokens such as `EMAIL_1`, `IP_2`, `HOST_3`, `USER_4` before the message is sent to the Claude API.
+- You can also define **custom always-mask terms** (project code-names, employee names, etc.) in the input area.
+- The token-to-value map is stored **locally only** in `kql_assistant.db` and never sent to any external service.
+- Claude receives only the token placeholders. Its replies — which also contain tokens — are reversed before you see them, so you always read the real values in the chat.
+- Use the **Preview →** button to inspect exactly what will be sent before you hit Send.
+- Masking is **on by default** but can be toggled off per message if needed.
 
-- Persistent chat sessions across restarts
-- Export the query library to JSON/CSV
-- Additional alert-type playbooks
-- Optional direct Sentinel / Log Analytics integration
+> **Note:** Even with masking on, the structural context of your scenario (table names, KQL patterns, alert type) is still sent to the API. Use placeholders for any remaining sensitive context.
+
+### Still applies
+- Your API key lives only in `.env` (git-ignored). Never commit it.
+- Investigation history is stored locally in `kql_assistant.db` (git-ignored).
+- This is a local dev tool. Do not expose it to a network without hardening (disable debug, add authentication, use a production server).
+
+---
+
+## Features
+
+### Sensitive-data masking (Priority 1)
+- Automatic regex detection of emails, IPs, hostnames, `DOMAIN\user`, and custom terms.
+- Reversible tokenisation — same value always gets the same token within a case.
+- KQL code blocks are never touched, so queries stay valid.
+- Preview panel + masked-items badge in the UI.
+- Full unit-test suite in `tests/test_masking.py`.
+
+### Persistent conversations (Priority 2)
+- Each investigation has a `conversation_id`. Clicking a sidebar entry **restores** the full chat so you can continue where you left off.
+- **Search** investigations by keyword. **Rename** or **delete** individual cases.
+- Conversation messages are persisted in `conversation_messages` table; mask tokens stored in `mask_sessions`.
+
+### Streaming responses (Priority 3)
+- `/query` streams tokens via Server-Sent Events as they are generated.
+- A **Stop** button aborts the stream mid-flight.
+- The system prompt uses **prompt caching** to reduce latency and cost on repeated calls.
+- **Token usage** (input / output / cache hits) is shown after each reply.
+
+### Front-end hardening (Priority 4)
+- All dynamic HTML is sanitised with **DOMPurify** before being inserted into the DOM.
+- User-typed text is escaped with `createTextNode` before any `innerHTML` assignment.
+
+---
+
+## Project structure
+
+```
+.
+├── app.py              # Flask routes: chat (streaming), history, PDF export, library, query review
+├── database.py         # SQLite schema and migrations
+├── masking.py          # PII masking/unmasking module
+├── system_prompt.py    # System prompt: KQL and insider-risk expertise
+├── requirements.txt
+├── .env.example
+├── tests/
+│   └── test_masking.py
+├── templates/
+│   └── index.html
+└── static/
+    ├── script.js
+    └── style.css
+```
+
+### API routes
+
+| Method | Route | Purpose |
+|---|---|---|
+| GET | `/` | Web UI |
+| POST | `/query` | Send a scenario, get streaming queries and checklist |
+| POST | `/preview_mask` | Preview what will be sent to Claude after masking |
+| GET | `/history[?q=keyword]` | Recent saved conversations (with search) |
+| GET | `/conversation/<id>` | Load full conversation for restore |
+| PATCH | `/conversation/<id>` | Rename conversation title |
+| DELETE | `/conversation/<id>` | Delete conversation and all messages |
+| GET | `/export/<id>` | Download investigation as PDF |
+| GET / POST | `/library` | List or save library queries |
+| PATCH / DELETE | `/library/<id>` | Rename, update or delete a library query |
+| POST | `/review_query` | Claude review of a KQL query |
+| POST | `/reset` | Clear the in-memory conversation state |
+
+---
 
 ## Licence
 
 Released under the [MIT License](LICENSE).
+
+Released under the [MIT License](LICENSE).
+
