@@ -24,46 +24,6 @@ Then open <http://localhost:5000>. You need Python 3.10+ and an [Anthropic API k
 
 ---
 
-## Features
-
-### Investigation assistant (chat)
-- Describe an alert or scenario, for example *"A user downloaded 1,200 files from SharePoint at 11pm and connected a USB drive shortly after."*
-- Choose an **alert type** for extra context: General, DLP, UEBA, SIEM, EDR, CASB, Pre-Termination Risk, Mass File Download, Data Exfiltration, Unusual Access.
-- Each response includes:
-  1. Alert type identification
-  2. Ready-to-run KQL queries using real Sentinel tables (`OfficeActivity`, `DeviceFileEvents`, `SigninLogs`, `CloudAppEvents`, `BehaviorAnalytics`, `DLPAll` and more)
-  3. A plain-English explanation of what each query does and why
-  4. A step-by-step checklist: what to look for next, escalation triggers and what to document
-  5. High-risk indicator flags, such as mass downloads, after-hours access, USB use and pre-termination patterns
-- The conversation keeps context, so you can ask follow-up questions. **New Investigation** resets it.
-- Markdown renders properly, KQL blocks are syntax-highlighted, and each has a **Copy Query** button.
-
-### Saved investigations
-- Every investigation is saved automatically to a local SQLite database.
-- The sidebar lists recent investigations with the alert type, timestamp and a preview.
-
-### PDF export
-- Export any saved investigation as a PDF report containing:
-  - The alert type and original scenario
-  - A **3-part analyst summary**: *what is happening*, *what likely already occurred* and *what to expect next*
-  - The full investigation detail
-
-### Query Library
-- A set of built-in preset queries (USB activity, mass download, after-hours access) that paste straight into the chat without using any API tokens.
-- Save your own queries with a name, **rename** them and **delete** them. They persist locally.
-
-### KQL Editor
-- A dedicated editor tab to write or paste queries.
-- **Live structural validation** as you type: unbalanced brackets and quotes, a leading pipe, empty `where` clauses, common operator typos and more.
-- **Review with Claude** for a deeper check of syntax, inefficiencies, a suggested fix and a plain-English explanation.
-- Save the query to your library, or send it to the chat for further work.
-
-### UI
-- Dark and light themes (the choice is remembered).
-- Responsive layout that fits the viewport with an internally scrolling chat.
-
----
-
 ## Use cases
 
 - Triage of Microsoft Purview **DLP**, **UEBA**, **EDR** and **CASB** alerts
@@ -121,37 +81,6 @@ python app.py
 ```
 
 Open <http://localhost:5000>. The SQLite database (`kql_assistant.db`) is created automatically on first run.
-
----
-
-## Project structure
-
-```
-.
-â”œâ”€â”€ app.py              # Flask routes: chat, history, PDF export, library, query review
-â”œâ”€â”€ database.py         # SQLite schema and migrations
-â”œâ”€â”€ system_prompt.py    # System prompt: KQL and insider-risk expertise
-â”œâ”€â”€ requirements.txt
-â”œâ”€â”€ .env.example        # Template for your API key
-â”œâ”€â”€ templates/
-â”‚   â””â”€â”€ index.html
-â””â”€â”€ static/
-    â”œâ”€â”€ script.js
-    â””â”€â”€ style.css
-```
-
-### API routes
-
-| Method | Route | Purpose |
-|---|---|---|
-| GET | `/` | Web UI |
-| POST | `/query` | Send a scenario, get queries and a checklist |
-| GET | `/history` | Recent saved investigations |
-| GET | `/export/<id>` | Download an investigation as PDF |
-| GET / POST | `/library` | List or save library queries |
-| PATCH / DELETE | `/library/<id>` | Rename, update or delete a library query |
-| POST | `/review_query` | Claude review of a KQL query |
-| POST | `/reset` | Clear the conversation |
 
 ---
 
@@ -241,8 +170,6 @@ Sensitive values in your investigation scenarios **never leave your machine in p
 ---
 
 ## Licence
-
-Released under the [MIT License](LICENSE).
 
 Released under the [MIT License](LICENSE).
 
